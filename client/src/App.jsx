@@ -90,8 +90,11 @@ const router = createBrowserRouter([
   },
 ]);
 
+import TailwindTest from './components/TailwindTest';
+
 function App() {
   return <RouterProvider router={router} />;
+  // return <TailwindTest />;
 }
 
 export default App;
