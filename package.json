@@ -1,0 +1,26 @@
+{
+  "name": "talentifyx",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Talentifyx — precision job matching for engineers, powered by the open Arbeitnow jobs API",
+  "author": {
+    "name": "David Mwendwa",
+    "url": "https://github.com/David-mwendwa"
+  },
+  "license": "MIT",
+  "repository": "github:David-mwendwa/Talentifyx",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "npx concurrently --kill-others-on-fail --names \"FRONTEND,BACKEND\" \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\"",
+    "server": "npm run dev --prefix backend",
+    "build": "npm run build --prefix frontend",
+    "ingest": "npm run ingest --prefix backend",
+    "seed:demo": "npm run seed:demo --prefix backend",
+    "install:all": "npm install --prefix frontend && npm install --prefix backend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

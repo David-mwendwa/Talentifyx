@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Raleway:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-sans: 'Montserrat', system-ui, -apple-system, sans-serif;
+    --font-heading: 'Raleway', system-ui, -apple-system, sans-serif;
+  }
+
+  body {
+    @apply bg-dark-50 font-sans text-dark-800 antialiased dark:bg-dark-950 dark:text-dark-100;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2
+      disabled:cursor-not-allowed disabled:opacity-60 dark:focus-visible:ring-offset-dark-950;
+  }
+  .btn-primary {
+    @apply btn bg-primary-600 text-white shadow-sm hover:bg-primary-700;
+  }
+  .btn-outline {
+    @apply btn border border-dark-300 bg-white text-dark-700 hover:border-primary-400 hover:text-primary-700
+      dark:border-dark-700 dark:bg-dark-900 dark:text-dark-200 dark:hover:border-primary-500 dark:hover:text-primary-300;
+  }
+  .btn-ghost {
+    @apply btn text-dark-600 hover:bg-dark-100 dark:text-dark-300 dark:hover:bg-dark-800;
+  }
+
+  .card {
+    @apply rounded-xl border border-dark-200 bg-white shadow-card dark:border-dark-800 dark:bg-dark-900;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full border border-dark-200 bg-dark-50 px-2.5 py-1
+      text-xs font-medium text-dark-600 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-300;
+  }
+  .chip-primary {
+    @apply chip border-primary-200 bg-primary-50 text-primary-700 dark:border-primary-900 dark:bg-primary-950 dark:text-primary-300;
+  }
+
+  .form-label {
+    @apply mb-1.5 block text-sm font-medium text-dark-700 dark:text-dark-200;
+  }
+  .form-input {
+    @apply w-full rounded-lg border-dark-300 bg-white text-sm text-dark-800 placeholder:text-dark-400
+      focus:border-primary-500 focus:ring-primary-500 dark:border-dark-700 dark:bg-dark-900 dark:text-dark-100;
+  }
+
+  .section-title {
+    @apply font-heading text-2xl font-bold tracking-tight text-dark-900 dark:text-white sm:text-3xl;
+  }
+}
+
+.job-description h2,
+.job-description h3 {
+  @apply mt-6 font-heading text-lg font-semibold text-dark-900 dark:text-white;
+}
+.job-description p {
+  @apply my-3 leading-relaxed;
+}
+.job-description ul {
+  @apply my-3 list-disc space-y-1.5 pl-5;
+}

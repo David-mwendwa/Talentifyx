@@ -1,0 +1,51 @@
+# Netlify deploys the frontend only. The Express API lives on Render — see
+# render.yaml, and DEPLOYMENT.md for the full walkthrough.
+#
+# Set VITE_API_URL in the Netlify UI (Site configuration → Environment
+# variables) to the Render service URL plus /api/v1, BEFORE the first build:
+# Vite inlines it at build time, so changing it later needs a rebuild, not just
+# a redeploy. Without it the frontend falls back to a same-origin /api/v1,
+# which does not exist here.
+
+[build]
+  base = "frontend"
+  command = "npm ci && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# The API lives on Render, not here. Without this rule the catch-all below
+# answers /api/* with the SPA shell and a 200, so a frontend built without
+# VITE_API_URL parses HTML as JSON and dies on the first field it reads —
+# which looks like an app bug rather than a missing build variable.
+[[redirects]]
+  from = "/api/*"
+  to = "/index.html"
+  status = 404
+
+# Client-side routing: every unmatched path is served by the SPA shell. Must
+# stay last so real files (and /assets/*) win first.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Vite fingerprints everything under /assets, so it can be cached forever.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-store, must-revalidate"

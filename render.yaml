@@ -1,0 +1,44 @@
+# Render blueprint for the Talentifyx API. The React frontend is deployed
+# separately on Netlify (see netlify.toml).
+#
+# Every `sync: false` var must be filled in from the Render dashboard on first
+# deploy. backend/.env.example documents what each one is.
+services:
+  - type: web
+    name: talentifyx-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    rootDir: backend
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Render injects PORT itself; server.js reads it.
+
+      - key: MONGO_URI
+        sync: false
+
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 1d
+
+      # Netlify site URL, no trailing slash — the CORS allowlist. Accepts a
+      # comma-separated list so deploy previews can be allowed too.
+      - key: CLIENT_URL
+        sync: false
+
+      # --- Job sync ---
+      # The API refreshes listings itself: it checks hourly and re-ingests when
+      # the data is older than SYNC_INTERVAL_HOURS, including on boot. That boot
+      # check is what makes it work on the free plan, where the service is spun
+      # down when idle and a long-running timer would never fire.
+      # Set AUTO_SYNC=off to disable and drive ingestion externally instead.
+      - key: SYNC_INTERVAL_HOURS
+        value: "12"
+      - key: AUTO_SYNC
+        value: "on"
