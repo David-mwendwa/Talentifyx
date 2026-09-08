@@ -5,7 +5,8 @@
 # variables) to the Render service URL plus /api/v1, BEFORE the first build:
 # Vite inlines it at build time, so changing it later needs a rebuild, not just
 # a redeploy. Without it the frontend falls back to a same-origin /api/v1,
-# which does not exist here.
+# which does not exist here. vite.config.js also reads it to emit the API
+# preconnect hint, so a missing value costs a round trip as well as the data.
 
 [build]
   base = "frontend"
@@ -26,6 +27,12 @@
 
 # Client-side routing: every unmatched path is served by the SPA shell. Must
 # stay last so real files (and /assets/*) win first.
+#
+# Deliberately not `force`d, which is what lets the prerendered pages work:
+# Netlify serves a real file in preference to an unforced redirect, so /about
+# is answered by frontend/dist/about/index.html — the copy with its own title,
+# description and rendered markup — while this rule stays the fallback for
+# everything the build did not write, which includes every job page.
 [[redirects]]
   from = "/*"
   to = "/index.html"
@@ -39,13 +46,59 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
+# The signed-in dashboard: someone's application pipeline, saved searches and
+# CV metadata. Nothing here is public, and unlike the job pages there is no
+# version of it worth indexing.
+[[headers]]
+  for = "/dashboard/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/dashboard"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+# Deliberately no rule for /jobs/*. Job listings are the reason this site is
+# worth indexing at all, and a listing old enough to be filled asks for noindex
+# itself from the page (see frontend/src/lib/jobPosting.js) rather than being
+# blanket-blocked here. A header would also override that per-listing decision,
+# which is the one that knows how old the posting is.
+
 # Vite fingerprints everything under /assets, so it can be cached forever.
 [[headers]]
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# The HTML is never cached: it names the fingerprinted asset files, so a stale
+# copy pins a visitor to a deploy that no longer exists. Every prerendered
+# route is its own index.html and needs the same treatment — /about is a file
+# now, not a redirect to one.
 [[headers]]
   for = "/index.html"
   [headers.values]
     Cache-Control = "no-store, must-revalidate"
+
+[[headers]]
+  for = "/*/index.html"
+  [headers.values]
+    Cache-Control = "no-store, must-revalidate"
+
+# Fonts are self-hosted (see frontend/public/fonts) and their contents never
+# change under a given filename — a new subset gets a new name. They are also
+# on the critical path for first paint, so they are the assets most worth never
+# fetching twice.
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+# The unfurl image, fetched by every service that renders a shared link. A day
+# rather than a year: it is not fingerprinted, and a redesigned card that stays
+# stale in Slack's cache for a year is worse than one extra request.
+[[headers]]
+  for = "/og.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"

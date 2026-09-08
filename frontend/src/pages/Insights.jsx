@@ -17,6 +17,7 @@ import api from '../utils/api';
 import Loading from '../components/Loading';
 import { timeAgo } from '../utils/format';
 import { useTheme } from '../context/ThemeContext';
+import usePageMeta from '../lib/pageMeta';
 
 const SENIORITY_COLORS = {
   internship: '#94a3b8',
@@ -27,6 +28,7 @@ const SENIORITY_COLORS = {
 };
 
 const Insights = () => {
+  usePageMeta('Hiring insights', 'What the current engineering job market is asking for: the most-requested technologies, seniority mix and remote share across live listings.');
   const { dark } = useTheme();
   const [stats, setStats] = useState(null);
   const [meta, setMeta] = useState(null);

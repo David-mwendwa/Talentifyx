@@ -3,6 +3,7 @@ import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
+import compression from 'compression';
 import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -34,6 +35,12 @@ const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
   .filter(Boolean);
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+// Ahead of everything that produces a body. The jobs list is the endpoint that
+// matters: fifty listings of repeated keys and prose is close to gzip's best
+// case. Render's edge already gzips, so this changes nothing measurable there —
+// it matters locally and on any host that does not.
+app.use(compression());
 
 app.use(helmet());
 app.use(

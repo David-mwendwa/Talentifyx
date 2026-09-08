@@ -11,6 +11,7 @@ import EmptyState from '../components/EmptyState';
 import SaveSearchButton from '../components/SaveSearchButton';
 import { useSavedJobs } from '../utils/useSavedJobs';
 import { rememberJobsQuery } from '../utils/lastJobsQuery';
+import usePageMeta from '../lib/pageMeta';
 
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest first' },
@@ -20,6 +21,7 @@ const SORT_OPTIONS = [
 ];
 
 const Jobs = () => {
+  usePageMeta('Browse engineering roles', 'Filter real engineering openings by stack, seniority, remote and job type — every listing tagged with the technologies it actually asks for.');
   const [searchParams, setSearchParams] = useSearchParams();
   const { savedIds, save } = useSavedJobs();
   const [result, setResult] = useState(null);

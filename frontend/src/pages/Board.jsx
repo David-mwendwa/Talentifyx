@@ -14,6 +14,7 @@ import {
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import ApplicationDrawer from '../components/ApplicationDrawer';
+import usePageMeta from '../lib/pageMeta';
 
 const COLUMN_ACCENTS = {
   saved: 'border-t-dark-400',
@@ -24,6 +25,7 @@ const COLUMN_ACCENTS = {
 };
 
 const Board = () => {
+  usePageMeta('My board', 'Your application pipeline.', { noindex: true });
   const [applications, setApplications] = useState(null);
   const [dragged, setDragged] = useState(null);
   const [active, setActive] = useState(null);

@@ -4,12 +4,57 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Talentifyx — Precision job matching for engineers</title>
     <meta
       name="description"
-      content="Talentifyx — where top talent meets precision matching. Discover verified engineering and tech opportunities tailored to your stack." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <title>Talentifyx — Precision job matching for engineers</title>
+      content="Talentifyx matches engineering roles to the stack you actually work in. Real listings, tagged by technology, scored against your skills — not keyword soup." />
+    <link rel="canonical" href="https://talentifyx.netlify.app/" />
+
+    <!-- Montserrat carries the body copy above the fold, so it is the face
+         worth blocking on; Raleway only sets headings and can arrive with the
+         rest of the page. Both are self-hosted — a Google Fonts stylesheet
+         costs two cross-origin round trips before a single glyph exists. -->
+    <link rel="preload" href="/fonts/Montserrat.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/fonts/fonts.css" />
+
+    <!-- These are defaults. usePageMeta rewrites them per route, and the build
+         writes the correct values straight into each prerendered page, so a
+         crawler that never runs the JavaScript still gets the right ones.
+         There were no social tags at all before this: every shared link
+         unfurled as a bare URL. -->
+    <meta property="og:site_name" content="Talentifyx" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://talentifyx.netlify.app/" />
+    <meta property="og:title" content="Talentifyx — Precision job matching for engineers" />
+    <meta
+      property="og:description"
+      content="Talentifyx matches engineering roles to the stack you actually work in. Real listings, tagged by technology, scored against your skills — not keyword soup." />
+    <meta property="og:image" content="https://talentifyx.netlify.app/og.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Talentifyx — engineering roles matched to your stack" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Talentifyx — Precision job matching for engineers" />
+    <meta
+      name="twitter:description"
+      content="Talentifyx matches engineering roles to the stack you actually work in. Real listings, tagged by technology, scored against your skills — not keyword soup." />
+    <meta name="twitter:image" content="https://talentifyx.netlify.app/og.jpg" />
+    <meta name="twitter:image:alt" content="Talentifyx — engineering roles matched to your stack" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Talentifyx",
+        "url": "https://talentifyx.netlify.app",
+        "description": "Engineering job listings matched to the technologies you actually work in.",
+        "inLanguage": "en"
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

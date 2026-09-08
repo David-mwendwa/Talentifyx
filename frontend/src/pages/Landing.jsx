@@ -5,6 +5,7 @@ import api from '../utils/api';
 import { timeAgo } from '../utils/format';
 import JobCard from '../components/JobCard';
 import { useSavedJobs } from '../utils/useSavedJobs';
+import usePageMeta from '../lib/pageMeta';
 
 const HOW_IT_WORKS = [
   {
@@ -25,6 +26,7 @@ const HOW_IT_WORKS = [
 ];
 
 const Landing = () => {
+  usePageMeta();
   const navigate = useNavigate();
   const { savedIds, save } = useSavedJobs();
   const [search, setSearch] = useState('');

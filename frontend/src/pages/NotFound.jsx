@@ -1,7 +1,11 @@
 import { Link } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi';
+import usePageMeta from '../lib/pageMeta';
 
-const NotFound = () => (
+const NotFound = () => {
+  usePageMeta('Page not found', 'That page does not exist on Talentifyx.', { noindex: true });
+
+  return (
   <div className="container grid place-items-center py-24 text-center">
     <div className="space-y-4">
       <p className="font-heading text-6xl font-extrabold text-primary-600 dark:text-primary-400">
@@ -21,6 +25,7 @@ const NotFound = () => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default NotFound;

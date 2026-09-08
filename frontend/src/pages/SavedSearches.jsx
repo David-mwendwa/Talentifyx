@@ -5,8 +5,10 @@ import { FiSearch, FiTrash2 } from 'react-icons/fi';
 import api, { errorMessage } from '../utils/api';
 import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
+import usePageMeta from '../lib/pageMeta';
 
 const describe = (query) => {
+  usePageMeta('Saved searches', 'Searches you have saved, with new-result counts.', { noindex: true });
   const parts = [];
   if (query.search) parts.push(`"${query.search}"`);
   if (query.stack) parts.push(query.stack.split(',').join(' / '));

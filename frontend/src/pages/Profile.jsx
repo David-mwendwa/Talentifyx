@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import api, { errorMessage } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import ResumeDropzone from '../components/ResumeDropzone';
+import usePageMeta from '../lib/pageMeta';
 
 const LINK_FIELDS = [
   { key: 'linkedinUrl', label: 'LinkedIn', placeholder: 'https://linkedin.com/in/…' },
@@ -11,6 +12,7 @@ const LINK_FIELDS = [
 ];
 
 const Profile = () => {
+  usePageMeta('Profile', 'Your stack, preferences and CV.', { noindex: true });
   const { user, setUser } = useAuth();
   const [allStacks, setAllStacks] = useState([]);
   const [saving, setSaving] = useState(false);

@@ -4,8 +4,10 @@ import { toast } from 'react-toastify';
 import { errorMessage } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
+import usePageMeta from '../lib/pageMeta';
 
 const Login = () => {
+  usePageMeta('Sign in', 'Sign in to Talentifyx to track applications, save searches and see roles matched to your stack.');
   const { login } = useAuth();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);

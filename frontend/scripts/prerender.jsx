@@ -1,0 +1,168 @@
+/**
+ * Renders the public routes to real HTML after `vite build`.
+ *
+ * The app shipped as an empty <div id="root"> and one <title> for all fourteen
+ * routes, with no canonical, no social tags and no unfurl image, so anything
+ * that reads a page without executing JavaScript saw a blank document. This
+ * writes each prerendered route as its own index.html with its own title,
+ * description, canonical and rendered markup; main.jsx then hydrates over it
+ * instead of building it from scratch.
+ *
+ * Run through vite-node so the JSX, the aliases and the env all resolve
+ * exactly as they do in the real build. The .jsx extension is required, not
+ * cosmetic: vite-node only transforms what it loads, and Node claims a .mjs
+ * entry for itself, so a .mjs version of this file fails on the first .jsx
+ * import it reaches.
+ */
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { Writable } from 'node:stream';
+import { StrictMode } from 'react';
+import { renderToPipeableStream } from 'react-dom/server';
+import { createMemoryRouter } from 'react-router-dom';
+import App from '../src/App.jsx';
+import { routeObjects, preloadRoute } from '../src/routes.jsx';
+import {
+  DISALLOW,
+  EXTRA_SITEMAP,
+  PRERENDER_PATHS,
+  SITE_URL,
+  canonicalFor,
+  metaForPath,
+  titleFor,
+} from './prerender-meta.mjs';
+
+const here = dirname(fileURLToPath(import.meta.url));
+const dist = resolve(here, '../dist');
+const template = readFileSync(join(dist, 'index.html'), 'utf8');
+
+// renderToString does not wait for Suspense boundaries to settle — it emits
+// the fallback and moves on. onAllReady does wait, which is the whole point
+// when every route in this app is behind React.lazy.
+const renderToHtml = (element) =>
+  new Promise((resolvePromise, rejectPromise) => {
+    let html = '';
+    const sink = new Writable({
+      write(chunk, _enc, cb) {
+        html += chunk;
+        cb();
+      },
+    });
+    sink.on('finish', () => resolvePromise(html));
+    const { pipe } = renderToPipeableStream(element, {
+      onAllReady() {
+        pipe(sink);
+      },
+      onError: rejectPromise,
+    });
+  });
+
+// Replaces the value of a tag index.html already carries. It throws rather
+// than inserting a second one, because a page with two og:title tags lets the
+// crawler choose, and silently adding tags here is how the template and the
+// prerendered pages drift apart without anyone noticing.
+const setMeta = (html, selector, attr, value) => {
+  const pattern = new RegExp(`(<meta\\s+${selector}\\s+content=")([^"]*)(")`, 'i');
+  if (!pattern.test(html)) {
+    throw new Error(`prerender: no <meta ${selector}> in index.html to set ${attr}`);
+  }
+  return html.replace(pattern, `$1${value.replace(/"/g, '&quot;')}$3`);
+};
+
+const escapeHtml = (s) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+const buildPage = async (path) => {
+  const route = metaForPath(path);
+  const title = titleFor(route);
+  const canonical = canonicalFor(path);
+
+  await preloadRoute(path);
+  const router = createMemoryRouter(routeObjects, { initialEntries: [path] });
+  const markup = await renderToHtml(
+    <StrictMode>
+      <App router={router} />
+    </StrictMode>
+  );
+
+  let html = template;
+  html = html.replace(/<title>[^<]*<\/title>/i, `<title>${escapeHtml(title)}</title>`);
+  html = setMeta(html, 'name="description"', 'description', route.description);
+  html = setMeta(html, 'property="og:title"', 'og:title', title);
+  html = setMeta(html, 'property="og:description"', 'og:description', route.description);
+  html = setMeta(html, 'property="og:url"', 'og:url', canonical);
+  html = setMeta(html, 'name="twitter:title"', 'twitter:title', title);
+  html = setMeta(html, 'name="twitter:description"', 'twitter:description', route.description);
+  html = html.replace(
+    /<link rel="canonical" href="[^"]*" \/>/i,
+    `<link rel="canonical" href="${canonical}" />`
+  );
+
+  if (route.noindex) {
+    html = html.replace('</head>', '  <meta name="robots" content="noindex, follow" />\n  </head>');
+  }
+
+  // Stamped with the route it was rendered for. Netlify's SPA fallback answers
+  // every path it has no file for with this same index.html, so a visitor
+  // opening /jobs/some-role receives the *landing page's* markup in the root.
+  // Without this attribute main.jsx sees a non-empty root, hydrates, and React
+  // finds a job listing where marketing copy was promised — mismatch, the
+  // markup is thrown away, and every such page logs error #418 in production.
+  html = html.replace(
+    '<div id="root"></div>',
+    `<div id="root" data-prerendered="${path}">${markup}</div>`
+  );
+
+  const outDir = path === '/' ? dist : join(dist, path);
+  mkdirSync(outDir, { recursive: true });
+  writeFileSync(join(outDir, 'index.html'), html);
+  return { path, bytes: markup.length };
+};
+
+const today = new Date().toISOString().slice(0, 10);
+
+const sitemap = () => {
+  const prerendered = PRERENDER_PATHS.filter((p) => !metaForPath(p).noindex).map((p) => ({
+    path: p,
+    changefreq: metaForPath(p).changefreq,
+    priority: metaForPath(p).priority,
+  }));
+  const entries = [...prerendered, ...EXTRA_SITEMAP]
+    .map(({ path, changefreq, priority }) =>
+      [
+        '  <url>',
+        `    <loc>${canonicalFor(path)}</loc>`,
+        `    <lastmod>${today}</lastmod>`,
+        `    <changefreq>${changefreq}</changefreq>`,
+        `    <priority>${priority}</priority>`,
+        '  </url>',
+      ].join('\n')
+    )
+    .join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>\n`;
+};
+
+const robots = () =>
+  [
+    'User-agent: *',
+    'Allow: /',
+    ...DISALLOW.map((p) => `Disallow: ${p}`),
+    '',
+    `Sitemap: ${SITE_URL}/sitemap.xml`,
+    '',
+  ].join('\n');
+
+const run = async () => {
+  const results = [];
+  for (const path of PRERENDER_PATHS) results.push(await buildPage(path));
+  writeFileSync(join(dist, 'sitemap.xml'), sitemap());
+  writeFileSync(join(dist, 'robots.txt'), robots());
+  for (const r of results) console.log(`  prerendered ${r.path.padEnd(11)} ${r.bytes} chars`);
+  console.log('  sitemap.xml + robots.txt written');
+};
+
+run().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

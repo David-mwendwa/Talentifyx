@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200">
+  <!-- The card is a 1200x630 band inside a 1200x1200 square because qlmanage
+       rasterises to a square; sips crops the band back out. Edit the artwork
+       inside the translate(0,285) group and leave the frame alone.
+
+       Palette and mark are Talentifyx's own, read from tailwind.config.js and
+       public/logo.svg rather than invented: indigo primary into cyan secondary,
+       and the same crosshair — concentric rings around a centre dot — that the
+       "precision matching" idea is built on. -->
+  <style id="fonts" />
+  <rect width="1200" height="1200" fill="#020617" />
+  <g transform="translate(0,285)">
+    <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#0f172a" />
+        <stop offset="0.55" stop-color="#020617" />
+        <stop offset="1" stop-color="#01030c" />
+      </linearGradient>
+      <radialGradient id="glow" cx="0.12" cy="0.08" r="0.9">
+        <stop offset="0" stop-color="#6366f1" stop-opacity="0.32" />
+        <stop offset="1" stop-color="#6366f1" stop-opacity="0" />
+      </radialGradient>
+      <radialGradient id="glow2" cx="0.92" cy="0.9" r="0.6">
+        <stop offset="0" stop-color="#06b6d4" stop-opacity="0.20" />
+        <stop offset="1" stop-color="#06b6d4" stop-opacity="0" />
+      </radialGradient>
+      <linearGradient id="mark" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#6366f1" />
+        <stop offset="100%" stop-color="#06b6d4" />
+      </linearGradient>
+      <linearGradient id="rule" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#6366f1" />
+        <stop offset="1" stop-color="#06b6d4" />
+      </linearGradient>
+      <clipPath id="band"><rect width="1200" height="630" /></clipPath>
+    </defs>
+
+    <g clip-path="url(#band)">
+      <rect width="1200" height="630" fill="url(#bg)" />
+      <rect width="1200" height="630" fill="url(#glow)" />
+      <rect width="1200" height="630" fill="url(#glow2)" />
+      <rect x="0" y="0" width="1200" height="5" fill="url(#rule)" />
+
+      <!-- The logo mark at 1.05x, exactly the geometry in public/logo.svg. -->
+      <g transform="translate(84,74) scale(1.05)">
+        <rect width="64" height="64" rx="16" fill="url(#mark)" />
+        <circle cx="32" cy="32" r="17" fill="none" stroke="#fff" stroke-width="3" opacity="0.55" />
+        <circle cx="32" cy="32" r="8" fill="none" stroke="#fff" stroke-width="3" />
+        <circle cx="32" cy="32" r="2.5" fill="#fff" />
+        <path d="M32 8v7M32 49v7M8 32h7M49 32h7" stroke="#fff" stroke-width="3" stroke-linecap="round" />
+      </g>
+      <text x="172" y="118" font-family="Raleway" font-size="38" font-weight="800" fill="#f8fafc" letter-spacing="-0.8">Talentifyx</text>
+
+      <text x="84" y="256" font-family="Raleway" font-size="80" font-weight="800" fill="#f8fafc" letter-spacing="-2.4">Roles matched to the</text>
+      <text x="84" y="346" font-family="Raleway" font-size="80" font-weight="800" fill="#818cf8" letter-spacing="-2.4">stack you actually use</text>
+
+      <text x="84" y="417" font-family="Montserrat" font-size="29" font-weight="400" fill="#94a3b8" letter-spacing="-0.2">Real engineering listings, tagged by technology and</text>
+      <text x="84" y="457" font-family="Montserrat" font-size="29" font-weight="400" fill="#94a3b8" letter-spacing="-0.2">scored against your skills — not keyword soup.</text>
+
+      <g transform="translate(84,511)">
+        <rect width="196" height="48" rx="24" fill="#0b1220" stroke="#1e293b" />
+        <text x="24" y="31" font-family="Montserrat" font-size="20" font-weight="500" fill="#a5b4fc">Stack matching</text>
+      </g>
+      <g transform="translate(300,511)">
+        <rect width="214" height="48" rx="24" fill="#0b1220" stroke="#1e293b" />
+        <text x="24" y="31" font-family="Montserrat" font-size="20" font-weight="500" fill="#67e8f9">Kanban tracking</text>
+      </g>
+      <g transform="translate(534,511)">
+        <rect width="216" height="48" rx="24" fill="#0b1220" stroke="#1e293b" />
+        <text x="24" y="31" font-family="Montserrat" font-size="20" font-weight="500" fill="#a5b4fc">Saved searches</text>
+      </g>
+    </g>
+  </g>
+</svg>

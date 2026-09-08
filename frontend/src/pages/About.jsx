@@ -8,6 +8,7 @@ import {
   FiTarget,
   FiTrendingUp,
 } from 'react-icons/fi';
+import usePageMeta from '../lib/pageMeta';
 
 const FEATURES = [
   {
@@ -49,7 +50,10 @@ const STEPS = [
   'Set follow-up dates so no conversation goes quiet by accident.',
 ];
 
-const About = () => (
+const About = () => {
+  usePageMeta('About', 'How Talentifyx sources listings, tags them by technology, and scores them against the stack you declare.');
+
+  return (
   <div className="container max-w-5xl space-y-16 py-14">
     <header className="space-y-5 text-center">
       <span className="chip-primary mx-auto">About Talentifyx</span>
@@ -163,6 +167,7 @@ const About = () => (
       </div>
     </section>
   </div>
-);
+  );
+};
 
 export default About;

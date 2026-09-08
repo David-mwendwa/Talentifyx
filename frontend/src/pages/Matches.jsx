@@ -6,8 +6,10 @@ import Loading from '../components/Loading';
 import EmptyState from '../components/EmptyState';
 import { useAuth } from '../context/AuthContext';
 import { useSavedJobs } from '../utils/useSavedJobs';
+import usePageMeta from '../lib/pageMeta';
 
 const Matches = () => {
+  usePageMeta('Matches', 'Roles scored against the stack you declared.', { noindex: true });
   const { user } = useAuth();
   const { savedIds, save } = useSavedJobs();
   const [jobs, setJobs] = useState(null);

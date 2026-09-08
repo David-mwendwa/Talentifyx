@@ -4,8 +4,10 @@ import { toast } from 'react-toastify';
 import api, { errorMessage } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
+import usePageMeta from '../lib/pageMeta';
 
 const Register = () => {
+  usePageMeta('Create an account', 'Create a Talentifyx account, declare your stack, and get engineering roles scored against it.');
   const { register } = useAuth();
   const navigate = useNavigate();
   const [allStacks, setAllStacks] = useState([]);

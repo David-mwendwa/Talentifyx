@@ -5,6 +5,7 @@ import api from '../utils/api';
 import Loading from '../components/Loading';
 import { formatDate, isDueToday, isOverdue } from '../utils/format';
 import { useAuth } from '../context/AuthContext';
+import usePageMeta from '../lib/pageMeta';
 
 const FUNNEL_STAGES = [
   { key: 'saved', label: 'Saved', color: 'bg-dark-400' },
@@ -14,6 +15,7 @@ const FUNNEL_STAGES = [
 ];
 
 const Overview = () => {
+  usePageMeta('Dashboard', 'Your application funnel, follow-ups and skill gaps.', { noindex: true });
   const { user } = useAuth();
   const [stats, setStats] = useState(null);
   const [gaps, setGaps] = useState(null);
